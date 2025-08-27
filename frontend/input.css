@@ -1,0 +1,72 @@
+body {
+      font-family: 'Open Sans', Arial, sans-serif;
+      background: #f8fafc;
+    }
+    .hero-section {
+      background: linear-gradient(90deg, #f8fafc 60%, #e3f0ff 100%);
+    }
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      padding: 2rem;
+    }
+    .form-label {
+      font-weight: 600;
+      color: #495057;
+    }
+    .form-control, .form-control:focus {
+      border-radius: 10px;
+      border: 1px solid #ced4da;
+      box-shadow: none;
+    }
+    .form-control:focus {
+      border-color: #611bf8;
+      box-shadow: 0 0 0 0.25rem rgba(97, 27, 248, 0.1);
+    }
+    .btn-primary {
+      background-color: #611bf8;
+      border: none;
+      border-radius: 10px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      background-color: #4f17d6;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(97, 27, 248, 0.3);
+    }
+    .footer {
+      font-size: 1rem;
+    }
+    .navbar-brand svg {
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .navbar .nav-link.active, .navbar .nav-link:focus, .navbar .nav-link:hover {
+      color: #fff !important;
+      font-weight: 600;
+    }
+    .navbar {
+      font-family: 'Lato', Arial, sans-serif;
+    }
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .page-header h1 {
+      font-family: 'Lato', sans-serif;
+      color: #343a40;
+      margin-bottom: 0.5rem;
+    }
+    .page-header p {
+      color: #6c757d;
+      font-size: 1.1rem;
+    }
+    .h-captcha {
+      margin: 1.5rem 0;
+    }

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Data - QA Generator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/frontend/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lato&family=Open+Sans&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <style>
+    .badge-positive { background-color: #10b981; color: white; }
+    .badge-negative { background-color: #ef4444; color: white; }
+    .badge-edge, .badge-boundary { background-color: #f59e0b; color: white; }
+    .user-story-header {
+      background-color: #f0f7ff;
+      border-left: 4px solid #3b82f6;
+    }
+    .test-data-table {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    .sample-data {
+      font-family: 'Courier New', monospace;
+      background-color: #f3f4f6;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      display: inline-block;
+      word-break: break-all;
+    }
+    .notes {
+      font-style: italic;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+        <svg class="me-2" width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="36" height="36" rx="8" fill="white" fill-opacity="0.2"></rect>
+          <path d="M18 8L28 14V22L18 28L8 22V14L18 8Z" fill="white"></path>
+          <path d="M18 16L23 19V22L18 25L13 22V19L18 16Z" fill="#611bf8"></path>
+        </svg>
+        QA Generator
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="input.html">Input</a></li>
+          <li class="nav-item"><a class="nav-link" href="cases.html">Test Cases</a></li>
+          <li class="nav-item"><a class="nav-link active" href="data.html">Test Data</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="py-5 bg-light">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-center mb-4">
+                <span class="material-symbols-outlined feature-icon me-3">database</span>
+                <h2 class="mb-0">Sample Test Data</h2>
+              </div>
+              
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <div class="input-group">
+                    <span class="input-group-text bg-white">
+                      <i class="fas fa-search text-primary"></i>
+                    </span>
+                    <input type="text" id="filter-data" class="form-control" placeholder="Filter data...">
+                  </div>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                  <button id="export-csv-btn" class="btn btn-outline-primary">
+                    <i class="fas fa-download me-2"></i>Export CSV
+                  </button>
+                </div>
+              </div>
+              
+              <div id="data-container" class="table-responsive">
+                <table class="table table-hover align-middle test-data-table">
+                  <thead class="table-light">
+                    <tr>
+                      <th>User Story</th>
+                      <th>Type</th>
+                      <th>Description</th>
+                      <th>Sample Test Data</th>
+                      <th>Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="data-rows">
+                    <!-- Default message shown while loading or if data is not found -->
+                    <tr><td colspan="5" class="text-center text-muted p-4">Loading test data...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center mt-4">
+                <div class="text-muted">
+                  Showing <span id="data-count">0</span> records
+                </div>
+                <!-- Pagination can be implemented later if needed -->
+              </div>
+            </div>
+          </div>
+          
+          <div class="card mt-4 shadow-sm border-0">
+            <div class="card-body p-4">
+              <h5 class="card-title mb-3">
+                <i class="fas fa-info-circle text-primary me-2"></i>Data Insights
+              </h5>
+              <div class="row">
+                <div class="col-md-4 text-center mb-3 mb-md-0">
+                  <h3 id="total-stories">0</h3>
+                  <p class="text-muted mb-0">User Stories</p>
+                </div>
+                <div class="col-md-4 text-center mb-3 mb-md-0">
+                  <h3 id="total-records">0</h3>
+                  <p class="text-muted mb-0">Total Records</p>
+                </div>
+                <div class="col-md-4 text-center">
+                  <h3 id="last-updated">N/A</h3>
+                  <p class="text-muted mb-0">Last Updated</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer bg-primary text-white text-center py-3 mt-5">
+      <!-- Footer content remains the same -->
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      
+      function renderDataFromStorage() {
+        const dataRowsContainer = document.getElementById('data-rows');
+        const dataContainer = document.getElementById('data-container');
+        dataRowsContainer.innerHTML = ''; // Clear existing content
+
+        const resultsString = localStorage.getItem("qa_results");
+        
+        if (!resultsString) {
+          dataContainer.innerHTML = `<div class="alert alert-warning">No generated data found. Please go to the Input page to generate test cases first.</div>`;
+          updateCounts(0, 0);
+          return;
+        }
+
+        try {
+          const results = JSON.parse(resultsString);
+          // Access data according to the structure in the screenshot
+          const testData = results.output?.test_data_table;
+
+          if (!testData || !Array.isArray(testData) || testData.length === 0) {
+            dataContainer.innerHTML = `<div class="alert alert-info">Test data was generated but appears to be empty.</div>`;
+            updateCounts(0, 0);
+            return;
+          }
+
+          let totalRecords = 0;
+          
+          testData.forEach(story => {
+            const storyTitle = story.user_story || "Unnamed Story";
+            
+            const headerRow = document.createElement('tr');
+            headerRow.className = 'user-story-header';
+            headerRow.innerHTML = `<td colspan="5" class="fw-bold">${storyTitle}</td>`;
+            dataRowsContainer.appendChild(headerRow);
+            
+            if (story.test_cases && Array.isArray(story.test_cases)) {
+              story.test_cases.forEach(tc => {
+                totalRecords++;
+                
+                const type = tc.type || 'N/A';
+                const description = tc.description || '';
+                const sampleData = tc.sample_data || '';
+                const notes = tc.notes || '';
+
+                const badgeClass = `badge-${type.toLowerCase()}`;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                  <td></td>
+                  <td><span class="badge ${badgeClass}">${type}</span></td>
+                  <td>${description}</td>
+                  <td><span class="sample-data">${sampleData.replace(/</g, "&lt;")}</span></td>
+                  <td class="notes">${notes}</td>
+                `;
+                dataRowsContainer.appendChild(row);
+              });
+            }
+          });
+
+          if (totalRecords === 0) {
+               dataContainer.innerHTML = `<div class="alert alert-warning">The generated data structure was found, but it contained no test records.</div>`;
+          }
+          
+          updateCounts(testData.length, totalRecords);
+          document.getElementById('last-updated').textContent = results.timestamp ? new Date(results.timestamp * 1000).toLocaleString() : new Date().toLocaleString();
+
+        } catch (error) {
+          console.error("Failed to parse or render test data:", error);
+          dataContainer.innerHTML = `<div class="alert alert-danger">Error: Could not parse the stored test data. It might be corrupted.</div>`;
+          updateCounts(0, 0);
+        }
+      }
+
+      function updateCounts(storyCount, recordCount) {
+        document.getElementById('data-count').textContent = recordCount;
+        document.getElementById('total-stories').textContent = storyCount;
+        document.getElementById('total-records').textContent = recordCount;
+      }
+
+      // Initial render on page load
+      renderDataFromStorage();
+      
+      // --- Event Listeners ---
+      
+      document.getElementById('filter-data').addEventListener('input', function(e) {
+        const filterText = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('#data-rows tr:not(.user-story-header)');
+        
+        let visibleRowsCount = 0;
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          if (text.includes(filterText)) {
+            row.style.display = '';
+            visibleRowsCount++;
+          } else {
+            row.style.display = 'none';
+          }
+        });
+        document.getElementById('data-count').textContent = visibleRowsCount;
+      });
+      
+      document.getElementById('export-csv-btn').addEventListener('click', function() {
+        const resultsString = localStorage.getItem("qa_results");
+        if (!resultsString) {
+          alert('No data found to export.');
+          return;
+        }
+        try {
+          const results = JSON.parse(resultsString);
+          const testData = results.output?.test_data_table;
+          if (!testData || !Array.isArray(testData) || testData.length === 0) {
+            alert('No test data available to export.');
+            return;
+          }
+          let csvRows = [
+            ["User Story","Type","Description","Sample Test Data","Notes"]
+          ];
+          testData.forEach(story => {
+            const storyTitle = story.user_story || "Unnamed Story";
+            if (story.test_cases && Array.isArray(story.test_cases)) {
+              story.test_cases.forEach(tc => {
+                csvRows.push([
+                  '"' + storyTitle.replace(/"/g, '""') + '"',
+                  '"' + (tc.type || '').replace(/"/g, '""') + '"',
+                  '"' + (tc.description || '').replace(/"/g, '""') + '"',
+                  '"' + (tc.sample_data || '').replace(/"/g, '""') + '"',
+                  '"' + (tc.notes || '').replace(/"/g, '""') + '"'
+                ]);
+              });
+            }
+          });
+          const csvContent = csvRows.map(row => row.join(",")).join("\r\n");
+          const blob = new Blob([csvContent], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'test_data.csv';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } catch (e) {
+          alert('Failed to export data as CSV.');
+        }
+      });
+      
+
+    });
+  </script>
+</body>
+</html>
