@@ -165,7 +165,7 @@
           const testData = results.output?.test_data_table;
 
           if (!testData || !Array.isArray(testData) || testData.length === 0) {
-            dataContainer.innerHTML = `<div class="alert alert-info">Test data was generated but appears to be empty.</div>`;
+            dataContainer.innerHTML = `<div class="alert alert-info">Test data appears to be empty.</div>`;
             updateCounts(0, 0);
             return;
           }

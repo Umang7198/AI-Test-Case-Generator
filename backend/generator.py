@@ -20,7 +20,39 @@ llm = ChatGroq(
     max_tokens=4096  # Increased to handle more detailed responses
 )
 
-# Prompts remain the same...
+
+
+validation_prompt = PromptTemplate(
+    input_variables=["input_text"],
+    template="""
+You are a senior business analyst. Your task is to validate if the provided text contains coherent software requirements, user stories, or functional specifications. Do not generate test cases.
+
+The input should describe a feature, user action, or system behavior. It should not be random text, a question, a generic statement, or a conversation or numbers or just alphabets or string of numbers.
+
+Analyze the following text:
+---
+{input_text}
+---
+
+Respond with a single JSON object with two keys:
+1.  "is_valid": a boolean (true if the text is a valid requirement, false otherwise).
+2.  "reason": a brief explanation for your decision. If it is valid, say "The input appears to be a valid software requirement."
+
+Example of a valid input:
+"As a user, I want to be able to log in with my username and password so that I can access my account."
+
+Example of an invalid input:
+"hello how are you today"
+
+Your entire output must be only the JSON object.
+
+JSON Response:
+"""
+)
+
+
+
+
 generate_prompt = PromptTemplate(
     input_variables=["input_text"],
     template="""
@@ -163,6 +195,7 @@ Generate the JSON array now:
 
 
 # Chains
+validation_chain = LLMChain(llm=llm, prompt=validation_prompt, output_key="validation_result")
 generate_chain = LLMChain(llm=llm, prompt=generate_prompt, output_key="generated_test_cases")
 review_chain = LLMChain(llm=llm, prompt=review_prompt, output_key="reviewed_test_cases")
 test_data_chain = LLMChain(llm=llm, prompt=test_data_prompt, output_key="test_data_table")
@@ -229,6 +262,21 @@ def generate_test_cases(input_text: str, uploaded_files: List = None) -> dict:
         if not combined_input:
             return {"error": "Please provide input via text or files."}
         
+
+        print("Validating input...")
+        try:
+            validation_result_str = validation_chain({"input_text": combined_input})["validation_result"]
+      
+            validation_json = json.loads(validation_result_str)
+            if not validation_json.get("is_valid"):
+                reason = validation_json.get("reason", "The provided input does not appear to be a valid user story or requirement.")
+                print(f"Input validation failed: {reason}")
+                return {"error": f"Invalid Input: {reason}"}
+        except json.JSONDecodeError:
+            print("Warning: Could not parse validation response. Proceeding with generation.")
+        
+        print("Input validated successfully. Proceeding to generate test cases.")
+
         # --- TEST CASE GENERATION AND VALIDATION LOOP ---
         parsed_test_cases = None
         cleaned_json_string = ""
