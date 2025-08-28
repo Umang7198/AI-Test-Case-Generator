@@ -1,7 +1,8 @@
 from fastapi.staticfiles import StaticFiles
-from fastapi import FastAPI, Form, UploadFile, File
+from fastapi import FastAPI, Form, UploadFile, File, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse,JSONResponse
+
 
 import requests
 import hashlib
@@ -23,6 +24,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+RATE_LIMIT_REQUESTS = 3 # max requests
+RATE_LIMIT_DURATION = 600  # in seconds
+
+# In-memory storage for user requests { "ip_address": [timestamp1, timestamp2, ...] }
+user_requests = {}
 
 # ⚠️ Replace with your real secret key from hCaptcha Dashboard
 HCAPTCHA_SECRET = os.getenv("HCAPTCHA_SECRET_KEY")
@@ -63,16 +70,38 @@ async def serve_data():
 
 @app.post("/process")
 async def process_request(
+    request: Request,
     hcaptcha_token: str = Form(..., alias="h-captcha-response"),
     input_text: Optional[str] = Form(""),
     files: Optional[List[UploadFile]] = File(None)
 ):
-    # 1. Verify hCaptcha
+    client_ip = request.client.host
+    current_time = time.time()
+
+    # Get the list of timestamps for this IP, or an empty list if it's the first time
+    request_timestamps = user_requests.get(client_ip, [])
+
+    # Filter out timestamps that are older than our duration
+    recent_timestamps = [ts for ts in request_timestamps if current_time - ts < RATE_LIMIT_DURATION]
+    
+    # Check if the user has exceeded the limit
+    if len(recent_timestamps) >= RATE_LIMIT_REQUESTS:
+        return JSONResponse(
+            status_code=429, # "Too Many Requests"
+            content={"error": f"You have exceeded the rate limit. Please try again in a few minutes."}
+        )
+    
+    # Add the current request's timestamp and update the dictionary
+    recent_timestamps.append(current_time)
+    user_requests[client_ip] = recent_timestamps
+
+
+
+
     if not verify_hcaptcha(hcaptcha_token):
         # return {"error": "❌ Captcha verification failed"}
         return FileResponse(f"{FRONTEND_DIR}/input.html")
 
-    # 2. Process uploaded files (optional)
     file_hashes = []
     file_objects = []
     if files:
