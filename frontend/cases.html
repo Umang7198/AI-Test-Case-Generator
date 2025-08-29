@@ -14,9 +14,10 @@
  
 </head>
 <body>
+
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
-      <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+      <a class="navbar-brand fw-bold d-flex align-items-center" href="/" id="back-to-input-btn">
         <svg class="me-2" width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="36" height="36" rx="8" fill="white" fill-opacity="0.2"></rect>
           <path d="M18 8L28 14V22L18 28L8 22V14L18 8Z" fill="white"></path>
@@ -29,7 +30,8 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <!-- <li class="nav-item"><a class="nav-link" href="input.html">Input</a></li> -->
+          <li class="nav-item" id="back-to-input-btn"><a class="nav-link" href="input.html">Back to Input</a></li>
+
           <li class="nav-item"><a class="nav-link active" href="cases.html">Test Cases</a></li>
           <li class="nav-item"><a class="nav-link" href="data.html">Test Data</a></li>
         </ul>
@@ -103,8 +105,11 @@
   <script src="/frontend/app.js"></script>
   <script src="/frontend/cases.js"></script>
 
-  <script>
-   
-  </script>
+<script>
+  document.getElementById('back-to-input-btn').addEventListener('click', function() {
+    localStorage.clear();
+    window.location.href = 'input.html';
+  });
+</script>
 </body>
 </html>

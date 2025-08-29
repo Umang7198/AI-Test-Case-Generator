@@ -9,10 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Lato&family=Open+Sans&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
   <script src="/frontend/config.js"></script>
-    <link rel="stylesheet" href="/frontend/input.css">
+  <link rel="stylesheet" href="/frontend/input.css">
 
   <script src="https://js.hcaptcha.com/1/api.js?onload=hcaptchaOnLoad&render=explicit" async defer></script>
-  
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
@@ -31,8 +30,6 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link active" href="input.html">Input</a></li>
-          <!-- <li class="nav-item"><a class="nav-link" href="cases.html">Test Cases</a></li>
-          <li class="nav-item"><a class="nav-link" href="data.html">Test Data</a></li> -->
         </ul>
       </div>
     </div>
@@ -55,18 +52,39 @@
             <textarea id="input_text" name="input_text" class="form-control" rows="5" placeholder="Enter your requirements or user stories here..."></textarea>
           </div>
           
-          <!-- File upload -->
-          <div class="mb-4">
-            <label for="files" class="form-label">
-              <i class="fas fa-cloud-upload-alt me-2"></i>Upload Files (optional)
-            </label>
-            <input type="file" name="files" id="files" class="form-control" multiple>
-            <div class="form-text">Supported formats: PDF, DOC, DOCX, TXT</div>
-          </div>
+<!-- File upload + Model selection side by side -->
+<div class="row mb-4">
+  <!-- File Upload Column -->
+  <div class="col-md-6">
+    <label for="files" class="form-label">
+      <i class="fas fa-cloud-upload-alt me-2"></i>Upload Files (optional)
+    </label>
+    <input type="file" name="files" id="files" class="form-control form-control-sm" multiple>
+    <div class="form-text">Supported formats: PDF, DOC, DOCX, TXT</div>
+  </div>
+
+  <!-- Model Select Column -->
+  <div class="col-md-6">
+    <label for="model-select" class="form-label">
+      <i class="fas fa-microchip me-2"></i>Select Model
+    </label>
+    <select id="model-select" name="model" class="form-select form-select-sm" style="border-radius:10px;">
+      <option value="deepseek-r1-distill-llama-70b" selected>deepseek-r1-distill-llama-70b </option>
+      <option value="gemma2-9b-it">Gemma 2 9B</option>
+      <option value="llama-3.3-70b-versatile">LLaMA 3.3 70B versatile</option>
+            <option value="openai/gpt-oss-120b"> GPT-oss-120b</option>
+            <option value="llama-3.1-8b-instant">LLaMA 3.1 8B instant</option>
+
+    </select>
+  </div>
+</div>
+
           
           <!-- hCaptcha -->
-          <div class="mb-4">
-            <div class="h-captcha" id="hcaptcha-widget"></div>
+          <div class="row mb-4 align-items-end">
+            <div class="col-md-6 mb-3 mb-md-0">
+              <div class="h-captcha" id="hcaptcha-widget"></div>
+            </div>
           </div>
 
           <div id="captcha-error" class="alert alert-danger d-none" role="alert">
@@ -152,6 +170,9 @@
       }
       
       var formData = new FormData();
+      var model = document.getElementById('model-select').value;
+      formData.append('model', model);
+
       formData.append('input_text', inputText);
       formData.append('h-captcha-response', captchaResponse);
       

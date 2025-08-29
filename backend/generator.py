@@ -245,11 +245,11 @@ def get_file_hashes(uploaded_files: List) -> Tuple:
     return tuple(hashes)
 
 
-def generate_test_cases(input_text: str, uploaded_files: List = None) -> dict:
+def generate_test_cases(input_text: str, uploaded_files: List = None,model:str=None) -> dict:
     print("Generating test cases...")
     
     MAX_RETRIES = 3
-
+    print(model)
     try:
         file_text = ""
         if uploaded_files:

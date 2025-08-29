@@ -25,13 +25,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-RATE_LIMIT_REQUESTS = 3 # max requests
+RATE_LIMIT_REQUESTS = 10 # max requests
 RATE_LIMIT_DURATION = 600  # in seconds
 
 # In-memory storage for user requests { "ip_address": [timestamp1, timestamp2, ...] }
 user_requests = {}
 
-# ⚠️ Replace with your real secret key from hCaptcha Dashboard
 HCAPTCHA_SECRET = os.getenv("HCAPTCHA_SECRET_KEY")
 
 
@@ -54,7 +53,7 @@ FRONTEND_DIR = "frontend"
 @app.get("/", include_in_schema=False)
 async def serve_index():
     return FileResponse("frontend/index.html")
-    # return "Hello, World!"
+  
 
 @app.get("/input.html", include_in_schema=False)
 async def serve_input():
@@ -73,11 +72,13 @@ async def process_request(
     request: Request,
     hcaptcha_token: str = Form(..., alias="h-captcha-response"),
     input_text: Optional[str] = Form(""),
+    model: Optional[str] = Form(None),  # <-- Add this line
+
     files: Optional[List[UploadFile]] = File(None)
 ):
     client_ip = request.client.host
     current_time = time.time()
-
+    print(model)
     # Get the list of timestamps for this IP, or an empty list if it's the first time
     request_timestamps = user_requests.get(client_ip, [])
 
@@ -88,7 +89,7 @@ async def process_request(
     if len(recent_timestamps) >= RATE_LIMIT_REQUESTS:
         return JSONResponse(
             status_code=429, # "Too Many Requests"
-            content={"error": f"You have exceeded the rate limit. Please try again in a few minutes."}
+            content={"error": "You have exceeded the rate limit. Please try again in a few minutes."}
         )
     
     # Add the current request's timestamp and update the dictionary
@@ -99,7 +100,6 @@ async def process_request(
 
 
     if not verify_hcaptcha(hcaptcha_token):
-        # return {"error": "❌ Captcha verification failed"}
         return FileResponse(f"{FRONTEND_DIR}/input.html")
 
     file_hashes = []
@@ -112,7 +112,7 @@ async def process_request(
             file_objects.append(f)  # pass UploadFile, not f.file
 
     # 3. Call your generator
-    result = generate_test_cases(input_text=input_text, uploaded_files=file_objects)
+    result = generate_test_cases(input_text=input_text, uploaded_files=file_objects,model=model)
     print(result)
     # 4. Return result
     return {
